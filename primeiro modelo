@@ -1,0 +1,45 @@
+#importamos os dados da url
+#a funcao read colocad os dados na variavel dados
+#a funcao head nos mostra as primeira linhas do arquivo importado
+
+import pandas as pd
+
+uri = "https://gist.githubusercontent.com/guilhermesilveira/b9dd8e4b62b9e22ebcb9c8e89c271de4/raw/c69ec4b708fba03c445397b6a361db4345c83d7a/tracking.csv"
+dados = pd.read_csv(uri)
+dados.head()
+
+#dividimos os dados em x e y (dados e classes)
+# x e uma matriz pois sao varias colunas
+
+y = dados["comprou"]
+y.head()
+
+x = dados[["inicial", "palestras", "contato", "patrocinio"]]
+x.head()
+
+#precisamos separar os dados em treino e teste
+#e possivel fazer isso de forma automatica ou manual
+#faremos automticamente utilizando funcoes da bibilioteca
+
+from sklearn.model_selection import train_test_split 
+from sklearn.svm import LinearSVC
+from sklearn.metrics import accuracy_score
+
+#vamos definir uma SEMENTE para manter a aleatoriedade padronizada
+#e estratificar nosson dados para ter certteza de que as proporcoes estarao corrtas
+
+SEED =  54567
+
+treinox, testex, treinoy, testey = train_test_split(x, y, random_state = SEED, stratify = y)
+
+#agora sim vamos treinar o modelo
+
+modelo = LinearSVC()
+modelo.fit(treinox, treinoy)
+
+#agora basta testar o modelo
+
+previsoes = modelo.predict(testex)
+acuracia = accuracy_score(testey, previsoes) * 100
+
+print(f"a acuracia foi {acuracia:.2f}%")
